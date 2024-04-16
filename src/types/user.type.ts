@@ -1,5 +1,4 @@
 export type UserToken = {
-    id?: string,
-    username?: string,
+    userId?: string,
     email?: string
 }

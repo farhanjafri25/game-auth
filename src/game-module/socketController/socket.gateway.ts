@@ -86,8 +86,10 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     const roomId = body.roomId;
     socket.join(`${roomId}`);
-    if (this.rooms.size >= 2) {
-      this.server.to(`${roomId}`).emit('game:int', { roomId });
+    if (this.rooms.get(`${roomId}`).size >= 2) {
+      this.server
+        .to(`${roomId}`)
+        .emit('game:init', 'Opponent Match found! Quiz Started');
     }
   }
 }

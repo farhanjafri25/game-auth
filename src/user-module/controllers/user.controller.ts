@@ -3,6 +3,7 @@ import { UserLoginDto, UserSignUpDto } from "src/dto/user.dto";
 import { UserService } from "../services/user.service";
 import { v4 as uuidv4 } from 'uuid';
 import { AppInterceptor } from "src/app.interceptor";
+import { Public } from "../../decorators";
 
 
 @UseInterceptors(AppInterceptor)
@@ -10,7 +11,8 @@ import { AppInterceptor } from "src/app.interceptor";
 export class UserController {
     constructor(private userService: UserService) { }
     
-    @Post('/signUp')
+    @Public()
+    @Post('/register')
     async signUser(@Body() body: UserSignUpDto) {
         if (!body.email || !body.password || !body.confirmPassword) {
             throw new BadRequestException('All fields are required')
@@ -22,6 +24,7 @@ export class UserController {
         return saveUser
     }
 
+    @Public()
     @Post('/login')
     async loginUser(@Body() body: UserLoginDto) {
         if (!body.email || !body.password) {
