@@ -11,15 +11,20 @@ import { UserSchema } from './model/user.model';
 import { UserModule } from './user-module/user.module';
 
 @Module({
-  imports: [MongooseModule.forRoot(`mongodb+srv://farhanjafri:farhanjafriMongo25@cluster0.sjhpikb.mongodb.net/game`),
-    MongooseModule.forFeature([
-      { name: "game_score_data", schema: GameSchema},
-      { name: "questions_data", schema: QuestionSchema}
-  ]), UserModule, GameModule],
+  imports: [
+    MongooseModule.forRoot(
+      `mongodb+srv://farhanjafri:farhanjafriMongo25@cluster0.sjhpikb.mongodb.net/game`,
+    ),
+    UserModule,
+    GameModule,
+  ],
   controllers: [AppController],
-  providers: [AppService, {
-    provide: APP_GUARD,
-    useClass: AccessTokenGuard
-  }],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AccessTokenGuard,
+    },
+  ],
 })
 export class AppModule {}

@@ -8,14 +8,21 @@ import { AppGateway } from './socketController/socket.gateway';
 import { UserModule } from '../user-module/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { AccessTokenStrategy } from '../strategies';
+import { MongooseModule } from '@nestjs/mongoose';
+import { QuestionSchema } from '../model/question.model';
+import { GameSchema } from '../model/game.model';
 
 @Module({
   imports: [
     JwtModule.register({
       secret: 'JwtSecret',
     }),
-        UserModule,
-    PassportModule.register({ defaultStrategy: 'jwt' })
+    UserModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    MongooseModule.forFeature([
+      { name: 'questions_data', schema: QuestionSchema },
+      { name: 'game_score_data', schema: GameSchema },
+    ]),
   ],
   controllers: [GameController],
   providers: [
