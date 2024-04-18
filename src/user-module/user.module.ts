@@ -8,6 +8,17 @@ import { UserService } from './services/user.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from '../model/user.model';
 import { PassportModule } from '@nestjs/passport';
+import * as path from 'path';
+import * as dotenv from 'dotenv';
+
+const envPath = path.join(
+  process.cwd(),
+  process.env.NODE_ENV ? `envs/.env.${process.env.NODE_ENV}` : `/.env`,
+);
+dotenv.config({
+  path: envPath,
+});
+console.log(`---> ${process.env.JWT_SECRET}`);
 
 @Module({
   imports: [

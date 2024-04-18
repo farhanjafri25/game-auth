@@ -11,6 +11,16 @@ import { AccessTokenStrategy } from '../strategies';
 import { MongooseModule } from '@nestjs/mongoose';
 import { QuestionSchema } from '../model/question.model';
 import { GameSchema } from '../model/game.model';
+import * as path from 'path';
+import * as dotenv from 'dotenv';
+
+const envPath = path.join(
+  process.cwd(),
+  process.env.NODE_ENV ? `envs/.env.${process.env.NODE_ENV}` : `/.env`,
+);
+dotenv.config({
+  path: envPath,
+});
 
 @Module({
   imports: [
