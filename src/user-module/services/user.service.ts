@@ -21,35 +21,28 @@ export class UserService {
 
   public async saveUser(body: UserSignUpInterface) {
     console.log('UserService ~ saveUser ~ body:', body);
-    try {
-      const getUserByEmail = await this.userRepository.getUserByEmail(
-        body.email,
-      );
-      if (getUserByEmail) throw new BadRequestException('Email already exists');
-      const hashedPassord = await this.utility.hashPassword(body.password);
-      const saveUser = await this.userRepository.saveUser({
-        ...body,
-        password: hashedPassord,
-      });
-      if (!saveUser) {
-        throw new BadRequestException('Something went wrong');
-      }
-      //Generate AccessToken of user with 1day validity
-      const accessToken = this.jwtService.sign(
-        { userId: saveUser.userId, email: saveUser.email },
-        {
-          expiresIn: '1d',
-        },
-      );
-      return {
-        userId: saveUser.userId,
-        email: saveUser.email,
-        accessToken,
-      };
-    } catch (error) {
-      console.log('UserService ~ saveUser ~ error:', error);
+    const getUserByEmail = await this.userRepository.getUserByEmail(body.email);
+    if (getUserByEmail) throw new BadRequestException('Email already exists');
+    const hashedPassord = await this.utility.hashPassword(body.password);
+    const saveUser = await this.userRepository.saveUser({
+      ...body,
+      password: hashedPassord,
+    });
+    if (!saveUser) {
       throw new BadRequestException('Something went wrong');
     }
+    //Generate AccessToken of user with 1day validity
+    const accessToken = this.jwtService.sign(
+      { userId: saveUser.userId, email: saveUser.email },
+      {
+        expiresIn: '1d',
+      },
+    );
+    return {
+      userId: saveUser.userId,
+      email: saveUser.email,
+      accessToken,
+    };
   }
 
   async loginUser(body: UserLoginInterface) {

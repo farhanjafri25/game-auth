@@ -23,7 +23,7 @@ export class UserRepository {
       return result;
     } catch (error) {
       console.log(error);
-      return null;
+      throw new BadRequestException('Something went wrong')
     }
   }
 //Function to retrieve user by ID
