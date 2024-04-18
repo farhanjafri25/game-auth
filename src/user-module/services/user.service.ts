@@ -38,7 +38,8 @@ export class UserService {
         },
       );
       return {
-        ...saveUser,
+        userId: saveUser.userId,
+        email: saveUser.email,
         accessToken,
       };
     } catch (error) {
