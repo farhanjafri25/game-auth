@@ -15,7 +15,7 @@ import { GameSchema } from '../model/game.model';
 @Module({
   imports: [
     JwtModule.register({
-      secret: 'JwtSecret',
+      secret: `${process.env.JWT_SECRET}`,
     }),
     UserModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),

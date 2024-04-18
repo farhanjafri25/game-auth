@@ -8,8 +8,9 @@ import { UserSignUpInterface } from 'src/interface/user.interface';
 export class UserRepository {
   constructor(
     @InjectModel('users_data') private readonly userModel: Model<User>,
-  ) {}
-
+  ) { }
+    
+//Function to save User in Mongo
   async saveUser(body: UserSignUpInterface) {
     try {
       const userObj = new this.userModel({
@@ -25,7 +26,7 @@ export class UserRepository {
       return null;
     }
   }
-
+//Function to retrieve user by ID
   async getUserById(id: string) {
       console.log("UserRepository ~ getUserById ~ id:", id);
       try {
@@ -37,7 +38,7 @@ export class UserRepository {
       throw new BadRequestException('Error getting User');
     }
   }
-    
+  //Function to retrieve user by email  
     async getUserByEmail(email: string) {
         try {
             const res = await this.userModel.findOne({ email: email });

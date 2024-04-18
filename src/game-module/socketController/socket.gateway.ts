@@ -18,10 +18,15 @@ import {
 
 @WebSocketGateway()
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  //Creating a Rooms map which stores userIds joined a particular room
   private rooms: Map<string, Set<string>> = new Map();
+  //A userRooms Map which stores userId and roomId of that userId
   private userRooms: Map<string, string> = new Map();
+  //A roomSet, a set data structure which stores the available rooms present
   private roomsSet = new Set();
+  //UserAnswers a map to store the userId and to store the score user has scored by giving correct answers
   private userAnswers: Map<string, number> = new Map();
+  //A variable to store the question pointer user as accessed
   private userQuestionIndex: Map<string, number> = new Map();
   constructor(
     private authService: JwtStrategy,
@@ -30,7 +35,10 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer()
   server: Server;
-
+  /*Handle connection function, This function gets invoked when ever a user is connecting to socket.
+ A validation check to check if incoming request is authorized.
+ Join the socket to a userId, mainly done as because the socketId changes on each connections
+    */
   async handleConnection(socket: Socket) {
     console.log('AppGateway ~ handleConnection ~ socket:', socket.id);
     const token = socket.handshake.headers.authorization;
@@ -42,7 +50,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     socket.join(user.userId);
   }
-
+  /* Handle disconnect function to remove user from the socket when ever user disconnects */
   async handleDisconnect(socket: Socket) {
     console.log('AppGateway ~ handleDisconnect ~ socket:', socket.id);
     const token = socket.handshake.headers.authorization;
@@ -51,7 +59,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       socket.leave(user.userId);
     }
   }
-
+  /* Function to add user to a roomId in map, the function checks if a roomId is present in map,
+  if not it creates a key.
+  The other check is to remove room form rooms set, thus making the room unavailable for more users to join the room */
   public addUserToRoomId(roomId: string, userId: string) {
     if (!this.rooms.has(roomId)) {
       this.rooms.set(roomId, new Set());
@@ -63,7 +73,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`roooms Map`, this.rooms);
     return;
   }
-
+  /* Function to add a roomId to a user, this done to keep a record of which room a user is belonging to */
   public addRoomToUserId(roomId: string, userId: string) {
     if (!this.userRooms.has(userId)) {
       this.userRooms.set(userId, roomId);
@@ -74,6 +84,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return;
   }
 
+  /* Function to get the rooms which have space left for a user to join, 
+    it randomly picks from the set and returns the roomId.
+    If no rooms are present then a new room id is created and returned */
   public getAvailableRooms() {
     if (this.roomsSet.size > 0) {
       const arrayFromSet = Array.from(this.roomsSet);
@@ -85,7 +98,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return newRoomId;
     }
   }
-
+  /* Patten to subsribe to game:init, it takes in a roomId and joins the requesting user to that room.
+  If there are 2 persons who have joined the room then we'll fetch a question from Mongo to serve it to both the players,
+  the socket emits the question to the roomId so that both the players recieve the question upon a match */
   @SubscribeMessage(`game:init`)
   async handleMessage(
     @MessageBody() body: GameInitInterface,
@@ -105,11 +120,11 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
   }
-
+  //Pattern to subscribe on question:send pattern
   @SubscribeMessage(`question:send`)
-  async sendQuestion(@ConnectedSocket() socket: Socket) {
-  }
+  async sendQuestion(@ConnectedSocket() socket: Socket) {}
 
+  /*Ans:submit message Pattern accepts a body which has questionId, ans text and the nextPage.*/
   @SubscribeMessage('answer:submit')
   async submitAnswer(
     @MessageBody() body: AnswerSubmitInterface,
@@ -121,7 +136,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       socket.disconnect(true);
       return;
     }
-    const { quesId, ans } = body;
+      const { quesId, ans } = body;
+      /*Fetch question data related to question Id to check for correct answer.
+      If correct increase user score count by 1 */
     const questionData = await this.questionRepository.getQuestionById(quesId);
     if (questionData) {
       if (questionData.correctAnswer === ans) {
@@ -134,12 +151,14 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
     }
     console.log(`score data ---->`, this.userAnswers.get(`${user.userId}`));
-
+//Get the next question to serve it to the user, nextPage is used to skip the no of questions already served
     const nextQuestion = await this.questionRepository.getQuestions(
       body.nextPage,
       body.pageSize,
     );
-    this.userQuestionIndex.set(`${user.userId}`, body.nextPage);
+      this.userQuestionIndex.set(`${user.userId}`, body.nextPage);
+      /*If no question is found then it means the user has answered all the questions,
+       and emit on game:end pattern to let users know about the winner and the score he obtained*/
     if (!nextQuestion.length) {
       const roomId = this.userRooms.get(`${user.userId}`);
       const usersSet = this.rooms.get(`${roomId}`);
@@ -158,9 +177,11 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       .emit('question:send', { nextQuestion, nextPage: body.nextPage + 1 });
   }
 
+  //Subscribe to game:end pattern to broadcast users present in a room about the game end
   @SubscribeMessage('game:end')
   async gameEnd(@ConnectedSocket() socket: Socket) {}
 
+  //Pattern to leave a room, this accepts a roomId and disconnects from the room
   @SubscribeMessage('leaveRoom')
   async handleLeaveRoom(
     @MessageBody() data: { roomId: string },
@@ -173,7 +194,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.userRooms.delete(user.userId);
     console.log(`Client ${socket.id} left room ${roomId}`);
   }
-
+  //Function to save user score data to mongoDb and remove the scores from the user answers map
   private async saveUserScoreData(userIds: string[], roomId: string) {
     if (!userIds.length) {
       return;

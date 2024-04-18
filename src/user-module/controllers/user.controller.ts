@@ -10,9 +10,10 @@ import { Public } from "../../decorators";
 @Controller('/users')
 export class UserController {
     constructor(private userService: UserService) { }
-    
+    //Public decorator to make API skip authorization middleware
     @Public()
     @Post('/register')
+    //Register user API
     async signUser(@Body() body: UserSignUpDto) {
         if (!body.email || !body.password || !body.confirmPassword) {
             throw new BadRequestException('All fields are required')
@@ -23,7 +24,7 @@ export class UserController {
         const saveUser = await this.userService.saveUser({ ...body, userId: uuidv4() });
         return saveUser
     }
-
+    //Login API
     @Public()
     @Post('/login')
     async loginUser(@Body() body: UserLoginDto) {

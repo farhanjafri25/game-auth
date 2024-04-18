@@ -12,7 +12,7 @@ import { PassportModule } from '@nestjs/passport';
 @Module({
   imports: [
     JwtModule.register({
-      secret: 'JwtSecret',
+      secret: `${process.env.JWT_SECRET}`,
     }),
     MongooseModule.forFeature([{ name: 'users_data', schema: UserSchema }]),
     PassportModule.register({ defaultStrategy: 'jwt' }),

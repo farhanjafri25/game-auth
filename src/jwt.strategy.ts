@@ -15,6 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: 'JwtSecret',
     });
   }
+    //Validate function to fetch user by ID from DB and check against his data, return unauthorised if not present
   async validate(payload: any): Promise<any> {
     const { userId } = payload;
     const user = await this.appRepository.getUserById(userId);

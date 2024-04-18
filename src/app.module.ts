@@ -13,7 +13,7 @@ import { UserModule } from './user-module/user.module';
 @Module({
   imports: [
     MongooseModule.forRoot(
-      `mongodb+srv://farhanjafri:farhanjafriMongo25@cluster0.sjhpikb.mongodb.net/game`,
+      `${process.env.MONGO_URI}`,
     ),
     UserModule,
     GameModule,
