@@ -37,37 +37,80 @@ $ npm install
 ```bash
 # development
 $ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
-## Test
+
+## About Project
+
+A quiz game made using websockets for realtime sending of data and answer submission
+
+
+## Technologies used
+
+## Nest Js Framework
+
+- A progressive Node.js framework for building efficient, reliable and scalable server-side applications.
+- Gives you true flexibility by allowing use of any other libraries.
+- Provides Modular Architecture.
+- It is helpful in implelmenting design patterns in javascript easily.
+
+### Nodejs/Express
+
+- Node Js is a javascript runtime coupled with ExpressJs framework it allows and helps in creating higly scalable servers easily.
+
+### Mongo DB
+
+- MongoDb is a NoSql database used to build highly available and scalable internet applications.
+- Schema Design is flexible
+
+### Mongoose Framework
+
+Mongoose is a Node. js-based Object Data Modeling (ODM) library for MongoDB.
+
+### TypeScript
+
+- Typescript is strongly typed programming language build over javascript.
+- It's used to provide typecheck and type errors.
+
+### Module API's
+```bash
+User Module
+
+@Post('BASE_URL/users/register'): Register a new user
+@Get('BASE_URL/users/login'): Login an existing user
+```
 
 ```bash
-# unit tests
-$ npm run test
+Game Module 
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+@Post('BASE_URL/game/start'): Start a game by returning a roomId
 ```
 
-## Support
+## Key points
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+1. Design a modular based architecture.
+2. Design a simple efficinet schema in mongoose
+3. Version Control of Api is handled properly
+4. Guards are used for auhentication and authorization of API's.
+5. Common Response Interceptor
+6. Global Error Handler Middleware
+7. Winston logger has been integrated for logging purpose.
+8. Clean code architecture.
 
-## Stay in touch
+## Application takeaways
+- Authentication is Done using JWT
+- There are 3 API's, Register a user, Login a user, and to start a Game which returns a game roomId a user can join.
+- There are rooms created for 2 users to play a quiz.
+- Due to time constraints, I'm using data structures locally, can use Redis for more persistance.
+- Have tested the API's using Postman.
+- Deployed the app on Render for public access of API's (https://game-auth.onrender.com)
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Postman Collection Urls
+ ```bash
+   Socket collection: https://go.postman.co/workspace/New-Team-Workspace~8a3c749c-c144-42c2-b76b-6cd886489fc4/collection/6620807ab6799acf3a20d43d
 
-## License
+  API's collection: 
+   ```
 
-Nest is [MIT licensed](LICENSE).
+
+
