@@ -22,6 +22,10 @@ export class UserService {
   public async saveUser(body: UserSignUpInterface) {
     console.log('UserService ~ saveUser ~ body:', body);
     try {
+      const getUserByEmail = await this.userRepository.getUserByEmail(
+        body.email,
+      );
+      if (getUserByEmail) throw new BadRequestException('Email already exists');
       const hashedPassord = await this.utility.hashPassword(body.password);
       const saveUser = await this.userRepository.saveUser({
         ...body,
