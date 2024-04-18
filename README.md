@@ -107,9 +107,9 @@ Game Module
 
 ## Postman Collection Urls
  ```bash
-   Socket collection: https://go.postman.co/workspace/New-Team-Workspace~8a3c749c-c144-42c2-b76b-6cd886489fc4/collection/6620807ab6799acf3a20d43d
+  Socket collection: https://go.postman.co/workspace/New-Team-Workspace~8a3c749c-c144-42c2-b76b-6cd886489fc4/collection/6620807ab6799acf3a20d43d
 
-  API's collection: 
+  APIs collection: https://bold-equinox-882594.postman.co/workspace/New-Team-Workspace~8a3c749c-c144-42c2-b76b-6cd886489fc4/collection/20846500-e7ddd2a7-cf72-4638-94cf-8b35d4b58f43?action=share&creator=20846500
    ```
 
 
